@@ -1,0 +1,587 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #000;
+    font-family: 'Arial', sans-serif;
+}
+
+#canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease-out;
+}
+
+.loading-content {
+    text-align: center;
+    color: #00ffff;
+    max-width: 80%;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #00ffff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-text {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 4px;
+    width: 100%;
+    background: rgba(0, 255, 255, 0.2);
+    margin: 15px 0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #00ffff;
+    animation: progress 3s ease-out forwards;
+}
+
+.status {
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin-top: 10px;
+    animation: statusChange 3s infinite;
+}
+
+@keyframes progress {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+@keyframes statusChange {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#info {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #00ffff;
+    z-index: 2;
+    text-shadow: 0 0 10px #00ffff;
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+
+#info h1 {
+    font-size: 5em;
+    margin-bottom: 10px;
+    letter-spacing: 5px;
+    animation: glow 2s infinite alternate;
+}
+
+#info p {
+    font-size: 1.8em;
+    letter-spacing: 2px;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+    to { text-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff; }
+}
+
+.hologram {
+    position: absolute;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(1px);
+}
+
+/* Robot Head and Interaction Panel */
+#interaction-panel {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 450px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 30, 60, 0.7);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    transform: translateY(100%);
+    transition: transform 0.5s ease-out;
+}
+
+#interaction-panel.active {
+    transform: translateY(0);
+}
+
+#robot-head {
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle at center, #00e5ff, #0077b6);
+    border-radius: 50%;
+    margin-bottom: 20px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* Robot face parts */
+#robot-head:before, #robot-head:after {
+    content: '';
+    position: absolute;
+    background: #000;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    top: 40px;
+    animation: blink 5s infinite;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.6) inset;
+    z-index: 2;
+}
+
+#robot-head:before {
+    left: 30px;
+}
+
+#robot-head:after {
+    right: 30px;
+}
+
+/* Iris effect for eyes */
+.eye-iris-left, .eye-iris-right {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: radial-gradient(circle at center, #00ffff, #007aff);
+    border-radius: 50%;
+    top: 47px;
+    z-index: 3;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.9);
+}
+
+.eye-iris-left {
+    left: 37px;
+}
+
+.eye-iris-right {
+    right: 37px;
+}
+
+/* Scanning effect */
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, rgba(0, 255, 255, 0), rgba(0, 255, 255, 0.8), rgba(0, 255, 255, 0));
+    top: 0;
+    left: 0;
+    animation: scan 3s ease-in-out infinite;
+    opacity: 0.7;
+    z-index: 5;
+}
+
+@keyframes scan {
+    0% { top: 0; }
+    50% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+    100% { top: 100%; }
+}
+
+/* Circuit pattern overlay */
+.circuit-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: 
+        radial-gradient(circle at 30% 20%, rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 70% 20%, rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 30% 80%, rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 70% 80%, rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(to right, rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 20px 20px, 20px 20px;
+    opacity: 0.3;
+    z-index: 1;
+}
+
+.mouth {
+    position: absolute;
+    width: 60px;
+    height: 8px;
+    background: #000;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4) inset;
+    overflow: hidden;
+}
+
+.mouth:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 255, 255, 0.5);
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    opacity: 0.7;
+}
+
+#robot-head.speaking .mouth {
+    animation: speak 0.3s infinite alternate;
+}
+
+/* Enhanced speaking animation */
+@keyframes speak {
+    0% { 
+        height: 5px; 
+        box-shadow: 0 0 8px rgba(0, 255, 255, 0.4) inset; 
+    }
+    25% {
+        height: 8px;
+        border-radius: 6px;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.6) inset;
+    }
+    75% {
+        height: 12px;
+        border-radius: 8px;
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.8) inset;
+    }
+    100% { 
+        height: 15px; 
+        border-radius: 10px; 
+        box-shadow: 0 0 15px rgba(0, 255, 255, 1) inset;
+    }
+}
+
+/* Enhanced blinking animation */
+@keyframes blink {
+    0%, 95%, 100% { 
+        height: 30px; 
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(0, 255, 255, 0.6) inset;
+    }
+    97% { 
+        height: 3px; 
+        transform: scaleY(0.1);
+        box-shadow: 0 0 4px rgba(0, 255, 255, 0.3) inset;
+    }
+}
+
+/* Emotional states */
+#robot-head.happy .mouth {
+    border-radius: 10px 10px 4px 4px;
+    transform: translateX(-50%) rotate(5deg);
+    animation: happy-mouth 1s infinite alternate;
+}
+
+#robot-head.thinking .mouth {
+    width: 30px;
+    height: 8px;
+    border-radius: 4px;
+}
+
+#robot-head.surprised:before, #robot-head.surprised:after {
+    height: 35px;
+    transform: scale(1.1);
+}
+
+@keyframes happy-mouth {
+    0% { transform: translateX(-50%) rotate(-5deg); }
+    100% { transform: translateX(-50%) rotate(5deg); }
+}
+
+#robot-head.speaking {
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { 
+        transform: scale(1); 
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); 
+    }
+    100% { 
+        transform: scale(1.05); 
+        box-shadow: 0 0 40px rgba(0, 255, 255, 1),
+                    0 0 60px rgba(0, 255, 255, 0.3); 
+    }
+}
+
+#conversation {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+}
+
+#conversation.active {
+    max-height: 300px;
+}
+
+#messages {
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(0, 10, 30, 0.5);
+    border-radius: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.jarvis-message {
+    background: rgba(0, 255, 255, 0.2);
+    color: #fff;
+    align-self: flex-start;
+    margin-right: auto;
+    border-bottom-left-radius: 5px;
+}
+
+.user-message {
+    background: rgba(100, 100, 255, 0.3);
+    color: #fff;
+    align-self: flex-end;
+    margin-left: auto;
+    border-bottom-right-radius: 5px;
+}
+
+/* Typing indicator for Jarvis */
+.typing-indicator {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background: #00ffff;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 2px;
+    opacity: 0.6;
+    animation: typing 1.4s infinite both;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0% {
+        transform: translateY(0px);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateY(-5px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0px);
+        opacity: 0.6;
+    }
+}
+
+#user-input-container {
+    display: flex;
+    gap: 10px;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    outline: none;
+}
+
+button {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(0, 200, 255, 0.5);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: rgba(0, 255, 255, 0.8);
+}
+
+/* Additional emotional states */
+#robot-head.sad .mouth {
+    width: 40px;
+    height: 8px;
+    border-radius: 4px;
+    transform: translateX(-50%) rotate(180deg) translateY(-10px);
+    bottom: 35px;
+}
+
+#robot-head.sad:before, #robot-head.sad:after {
+    transform: translateY(5px);
+}
+
+#robot-head.sad .eye-iris-left, #robot-head.sad .eye-iris-right {
+    transform: scale(0.7);
+    opacity: 0.7;
+}
+
+#robot-head.warning {
+    background: radial-gradient(circle at center, #ff9500, #ff5500);
+    box-shadow: 0 0 30px rgba(255, 100, 0, 0.8);
+}
+
+#robot-head.warning .mouth {
+    height: 3px;
+    width: 40px;
+}
+
+#robot-head.warning:before, #robot-head.warning:after {
+    background: #000;
+    height: 25px;
+}
+
+#robot-head.error {
+    background: radial-gradient(circle at center, #ff5555, #cc0000);
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+    animation: error-pulse 0.5s infinite alternate;
+}
+
+@keyframes error-pulse {
+    0% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
+    100% { box-shadow: 0 0 40px rgba(255, 0, 0, 1); }
+}
+
+#robot-head.error .mouth {
+    height: 15px;
+    border-radius: 5px;
+}
+
+#robot-head.error:before, #robot-head.error:after {
+    background: #000;
+    height: 25px;
+    width: 25px;
+}
+
+#robot-head.surprised .mouth {
+    height: 20px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+#robot-head.surprised .eye-iris-left, #robot-head.surprised .eye-iris-right {
+    transform: scale(1);
+}
+
+#robot-head.thinking {
+    background: radial-gradient(circle at center, #6495ED, #4169E1);
+}
+
+#robot-head.thinking .circuit-overlay {
+    opacity: 0.5;
+    animation: pulse-overlay 2s infinite alternate;
+}
+
+@keyframes pulse-overlay {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.5; }
+}
+
+#robot-head.thinking .mouth {
+    width: 20px;
+    height: 8px;
+    transform: translateX(-50%) rotate(0deg);
+}
+
+/* Iris movement animations for emotional states */
+#robot-head.happy .eye-iris-left {
+    animation: happy-iris 3s infinite alternate;
+}
+
+#robot-head.happy .eye-iris-right {
+    animation: happy-iris 3s infinite alternate-reverse;
+}
+
+@keyframes happy-iris {
+    0% { transform: scale(0.8) translate(0px, 0px); }
+    25% { transform: scale(0.8) translate(2px, -2px); }
+    50% { transform: scale(0.8) translate(-2px, -1px); }
+    75% { transform: scale(0.8) translate(1px, 2px); }
+    100% { transform: scale(0.8) translate(-1px, 1px); }
+}
+
+#robot-head.thinking .eye-iris-left, #robot-head.thinking .eye-iris-right {
+    animation: thinking-iris 2s infinite linear;
+}
+
+@keyframes thinking-iris {
+    0% { transform: scale(0.8) translateY(0px); }
+    25% { transform: scale(0.8) translateY(-2px); }
+    50% { transform: scale(0.8) translateY(0px); }
+    75% { transform: scale(0.8) translateY(2px); }
+    100% { transform: scale(0.8) translateY(0px); }
+} 
